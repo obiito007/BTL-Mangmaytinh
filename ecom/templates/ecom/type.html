@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <title>Free Books</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-h21C2fcDk/eFsW9sC9h0dhokq5pDinLNklTKoxIZRUn3+hvmgQSffLLQ4G4l2eEr" crossorigin="anonymous">
+    <style type="text/css">
+        body {
+  background-image: url("https://media.istockphoto.com/photos/abstract-blue-cyan-background-picture-id995719694?k=6&m=995719694&s=612x612&w=0&h=LKoM86RMnmeJe2DSRV4po_nfCycnGQaJK6v16GB-SWo=");
+
+  /* Half height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-repeat: no-repeat;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  -webkit-background-size: cover;
+
+}
+</style> 
+    </head>
+    
+    <script defer src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <body>
+        
+        <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Thư viện sách miễn phí</a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+                {% if user.username %}
+                   <li><h4><p class="text-success"><b> Xin chào {{user.username}}</b></p></h4></li>
+                    <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                {% else %}
+                    <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                {% endif %}
+    </ul>
+  </div>
+</nav>
+        
+        <div class="container">
+        <div id="categories-tab">
+            <ul class="nav nav-tabs">
+            {% for type in type_objs %}
+                {% if forloop.first %}
+                    <li class="h4 active">
+                        <a id="tab-{{ type.name | slugify }}" href="#{{ type.name | slugify }}" data-toggle="tab" aria-expanded="true">
+                            <i class="fa fa-folder-o" aria-hidden="true"></i> &nbsp;
+                            {{ type.name }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="h4">
+                        <a id="tab-{{ type.name | slugify }}" href="#{{ type.name | slugify }}" data-toggle="tab" aria-expanded="false">
+                            <i class="fa fa-folder-o" aria-hidden="true"></i> &nbsp;
+                            {{ type.name }}
+                        </a>
+                    </li>
+                {% endif %}        
+            {% endfor %}                
+            </ul>
+            <div id="product-in-category" class="tab-content">
+            {% for type in type_objs %}
+                {% if forloop.first %}
+                    <div class="tab-pane fade active in" id="{{ type.name | slugify }}">
+                {% else %}
+                    <div class="tab-pane fade" id="{{ type.name | slugify }}">
+                {% endif %}
+                        <p>
+                        <div class="row post-grid">
+                            {% for product in type.product_set.all %}
+                                {% if product.quantity > 0 %}
+                                <div class="col-sm-3">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <a href="{% url 'product' product.id %}"><img src="/media/{{ product.image }} " height="200" width="200"/></a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        <p>
+                                        <span><i class="fa fa-dollar" aria-hidden="true"></i>&nbsp; {{product.price}}</span>
+                                        &nbsp; &nbsp; 
+                                        <span><i class='fas fa-book-open' style='font-size:15px'" ></i>&nbsp; {{product.quantity}}</span>
+                                        <a href="{% url 'product' product.id %}"><h4>{{ product.name }}</h4>        </a>    
+                                    </p>
+                                </div>
+                                {% endif %}
+                                <br/>
+                                {% if page_obj.has_next %}
+                                    <a href="{{request.path}}?page={{page_obj.next_page_number}}">Tiếp</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>        
+            {% endfor %}
+            </div>
+        </div>
+        </div>
+    </<body>
+</html>
